@@ -123,7 +123,7 @@ def update_token(db:Session,users_id:int,total_price:int):
     fetch_id = db.query(models.token).filter(models.token.users_id==users_id).first()
     fetch_token = fetch_id.__dict__['token']
     if total_price > 600:
-        new_token = fetch_token +5
+        new_token = fetch_token + 5
         db.query(models.token).filter(models.token.users_id==users_id).update({"token":new_token})
         db.commit()
         return True
@@ -159,8 +159,6 @@ def purchase_info(db: Session,quantity:int, users_id:int, full_name: str,
                   balance       = balance_after_debit,
                   status        = "debited"
         )
-        
-       
         db.add(db_transaction)
         db.commit()
         if db_transaction:
@@ -192,7 +190,8 @@ def check_balance(db: Session, total_price: int, users_id:int):
   
     
 def verify_product(db:Session, product_name: str):
-    return db.query(models.product_details).filter(models.product_details.product_name==product_name).first()
+    db_product=db.query(models.product_details).filter(models.product_details.product_name==product_name).first()
+    return db_product
     
 def verify_stock(db : Session, quantity : str):
     return db.query(models.product_details).filter(models.product_details.product_stock >= quantity).first()    

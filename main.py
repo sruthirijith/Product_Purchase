@@ -15,7 +15,7 @@ from core.jwt.auth_bearer import JWTBearer
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Product purchase")
-
+ 
 origins = ["*"]
 
 app.add_middleware(
@@ -416,11 +416,11 @@ def buy_product(data: schema.product_purchase, token = Depends(JWTBearer()), db 
             },
         ) 
             else:
-                
                 product_name  =user_product.__dict__['product_name']
                 product_stock = user_product.__dict__['product_stock']
                 fullname      = userdata.__dict__['full_name']
                 quantity      = data.quantity
+            
                 stock_after_purchase = product_stock - quantity
                 purchase_date          = date.today()
                 purchase_details = crud.purchase_info(db=db,quantity=quantity, users_id=users_id, 
@@ -429,8 +429,13 @@ def buy_product(data: schema.product_purchase, token = Depends(JWTBearer()), db 
                 if purchase_details:
                     update_stock = crud.update_stock(db=db,product_name=product_name ,stock_after_purchase=stock_after_purchase)
                     if update_stock:
-                        add_token=crud.update_token(db=db,users_id=users_id,total_price=total_price)
-                        if add_token:
+                        # fetch_id = db.query(models.token).filter(models.token.users_id==users_id).first()
+                        # fetch_token = fetch_id.__dict__['token']
+                        # print(fetch_token)
+                        # if total_price > 600:
+                        #     new_token = fetch_token + 5
+                        #     db.query(models.token).filter(models.token.users_id==users_id).update({"token":new_token})
+                        #     db.commit()
                             return {
                             "detail": {
                             "status ": "Success",
@@ -439,7 +444,7 @@ def buy_product(data: schema.product_purchase, token = Depends(JWTBearer()), db 
                                     "status_code": 200,
                                     "status": "Success",
                                     "message": "purchased successfully",
-                                    "product_name":product_name,
+                                    # "product_name":product_name,
                                     # "quantity":quantity,
                                     # "token":add_token.__dict__['token']
                                 },
@@ -613,7 +618,7 @@ def product_update(data: schema.add_product, token = Depends(JWTBearer()), db : 
                                 "error" : {
                                     "status_code" : 409,
                                     "status":"Error",
-                                    "message" : "Error updating product",
+                                    "message" : "Error while updating product",
                                 }
                             },
                         )
