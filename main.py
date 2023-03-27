@@ -416,25 +416,30 @@ def buy_product(data: schema.product_purchase, token = Depends(JWTBearer()), db 
             },
         ) 
             else:
-                add_token=crud.update_token(db=db,users_id=users_id,total_price=total_price)
+                
                 product_name  =user_product.__dict__['product_name']
+                product_stock = user_product.__dict__['product_stock']
                 fullname      = userdata.__dict__['full_name']
                 quantity      = data.quantity
+                stock_after_purchase = product_stock - quantity
                 purchase_date          = date.today()
                 purchase_details = crud.purchase_info(db=db,quantity=quantity, users_id=users_id, 
                                                 full_name=fullname, product_name=product_name, 
                                                 date= purchase_date, total_price= total_price)
-                
                 if purchase_details:
-                    return {
-                        "detail": {
+                    update_stock = crud.update_stock(db=db,product_name=product_name ,stock_after_purchase=stock_after_purchase)
+                    if update_stock:
+                        add_token=crud.update_token(db=db,users_id=users_id,total_price=total_price)
+                        if add_token:
+                            return {
+                            "detail": {
                             "status ": "Success",
                                 "status_code": 200,
                                  "data": {
                                     "status_code": 200,
                                     "status": "Success",
                                     "message": "purchased successfully",
-                                    # "product_name":product_name,
+                                    "product_name":product_name,
                                     # "quantity":quantity,
                                     # "token":add_token.__dict__['token']
                                 },
@@ -608,7 +613,7 @@ def product_update(data: schema.add_product, token = Depends(JWTBearer()), db : 
                                 "error" : {
                                     "status_code" : 409,
                                     "status":"Error",
-                                    "message" : "Error while purchasing membership",
+                                    "message" : "Error updating product",
                                 }
                             },
                         )

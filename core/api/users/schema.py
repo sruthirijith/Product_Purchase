@@ -9,15 +9,6 @@ class UsersBase(BaseModel):
     password       : Optional[str]
     phone_number   : Optional[str]
     role_id        : int
-    
-
-        
-# class UserRoles(BaseModel):
-#     role: str = Field(..., min_length=1, max_length=20, description="User role")
-#     description: str = Field(..., min_length=5, max_length=500, description="User role description")
-    
-#     class Config:
-#         orm_mode = Trueimage.png
 
 
 class login(BaseModel):

@@ -151,7 +151,7 @@ def purchase_info(db: Session,quantity:int, users_id:int, full_name: str,
     )
     db.add(db_product)
     db.commit()
-    if purchase_info:
+    if db_product:
         db_transaction = models.transaction_log(
                   users_id      = users_id,
                   date          =date,
@@ -159,12 +159,18 @@ def purchase_info(db: Session,quantity:int, users_id:int, full_name: str,
                   balance       = balance_after_debit,
                   status        = "debited"
         )
+        
+       
         db.add(db_transaction)
         db.commit()
         if db_transaction:
             new_wallet= db.query(models.wallet).filter(models.wallet.users_id==users_id).update({"balance":balance_after_debit})
             db.commit()
             return db_product, db_transaction, new_wallet
+        
+def update_stock(db:Session,product_name:str ,stock_after_purchase: int):
+    db.query(models.product_details).filter(models.product_details.product_name==product_name).update({"product_stock": stock_after_purchase})
+    db.commit()
 
 def add_membership(db:Session,users_id: int,plan: str):
     db_membership = models.membership_purchased(
